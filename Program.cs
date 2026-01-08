@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swagger.Services;
 using System.Text;
+using Swagger.Extensions;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +14,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
+
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Swagger API",
         Version = "v1",
         Description = ".NET Core API with Swagger (OpenAPI)."
     });
+    c.OperationFilter<FileUploadOperationFilter>();
 
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
@@ -55,6 +60,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["JwtConfig:Issuer"],
         ValidAudience = builder.Configuration["JwtConfig:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"])),
+        NameClaimType = ClaimTypes.NameIdentifier,
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
@@ -65,6 +71,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<ImageService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -78,6 +85,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {

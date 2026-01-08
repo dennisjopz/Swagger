@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Swagger.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 
 #region Tables
 public class Account
@@ -20,6 +21,7 @@ public class Account
     public bool? Status { get; set; }
     public DateTime AccountCreated { get; set; }
     public ICollection<UserPermission> UserPermissions { get; set; }
+    public ICollection<Images> Images { get; set; }
 
 }
 public class UserPermission

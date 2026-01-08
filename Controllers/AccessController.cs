@@ -12,9 +12,9 @@ namespace Swagger.Controllers
     {
         private readonly JwtService _jwtService;
         private readonly AppDbContext _context;
-        private readonly ILogger<SwaggerController> _logger;
+        private readonly ILogger<AccessController> _logger;
 
-        public AccessController(AppDbContext context, ILogger<SwaggerController> logger, JwtService jwtService)
+        public AccessController(AppDbContext context, ILogger<AccessController> logger, JwtService jwtService)
         {
             _context = context;
             _logger = logger;

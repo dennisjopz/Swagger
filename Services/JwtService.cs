@@ -52,9 +52,16 @@ namespace Swagger.Services
 
                     var claims = new[]
                     {
-                        new Claim(JwtRegisteredClaimNames.Sub,jwtSubject),
-                        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
+                        new Claim(JwtRegisteredClaimNames.Sub, user.UserId), // JWT standard
+                        new Claim(ClaimTypes.NameIdentifier, user.UserId)    // maps correctly in ASP.NET Core
                     };
+
+                    //var claims = new[]
+                    //{
+                    //    new Claim(JwtRegisteredClaimNames.Sub,jwtSubject),
+                    //    new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+                    //    new Claim(ClaimTypes.NameIdentifier, user.UserId),
+                    //};
 
                     var tokenDescriptor = new SecurityTokenDescriptor
                     {
@@ -71,6 +78,7 @@ namespace Swagger.Services
 
                     return new JwtResponseModel
                     {
+                        UserID = user.UserId,
                         AccessToken = accessToken,
                         ExpiresIn = (int)tokenExpiryTimeStamp.Subtract(DateTime.UtcNow).TotalSeconds,
                     };

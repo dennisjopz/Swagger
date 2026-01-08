@@ -1,12 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Swagger.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Module> Modules { get; set; }
     public DbSet<UserPermission> UserPermissions { get; set; }
-
+    public DbSet<Images> Images { get; set; }
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -19,6 +22,9 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<UserPermission>().HasOne(a => a.Module).WithMany(a => a.UserPermissions).HasForeignKey(a => a.ModuleId);
 
         modelBuilder.Entity<Module>().HasKey(a=>a.ModuleId);
+
+        modelBuilder.Entity<Images>().HasKey(image => image.ImageId);
+        modelBuilder.Entity<Images>().HasOne(image => image.account).WithMany(account => account.Images).HasForeignKey(image => image.UserId);
 
         #region Seed Admin
         modelBuilder.Entity<Account>().HasData(
